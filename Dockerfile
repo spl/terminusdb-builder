@@ -2,10 +2,16 @@ FROM debian:bullseye-slim
 
 LABEL maintainer "TerminusDB Team <team@terminusdb.com>"
 
+# Variables that will never change
+ENV LANG=C.UTF-8 \
+    npm_config_cache=/tmp/npm-cache \
+    RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo
+ENV PATH=${CARGO_HOME}/bin:$PATH
+
 # Node.js and Cog configuration
 ENV NODE_VERSION=16 \
-    COG_VERSION=3.3.0 \
-    npm_config_cache=/tmp/npm-cache
+    COG_VERSION=3.3.0
 
 # Install build and development dependencies
 RUN set -eux; \
@@ -59,10 +65,8 @@ RUN set -eux; \
     pip --version; \
     cog -v
 
-# SWI-Prolog configuration
-ENV LANG=C.UTF-8 \
-    # See <https://github.com/SWI-Prolog/docker-swipl> for these values:
-    SWIPL_VERSION=8.4.2 \
+# SWI-Prolog configuration. See <https://github.com/SWI-Prolog/docker-swipl>.
+ENV SWIPL_VERSION=8.4.2 \
     SWIPL_CHECKSUM=be21bd3d6d1c9f3e9b0d8947ca6f3f5fd56922a3819cae03251728f3e1a6f389
 
 # Instal SWI-Prolog
@@ -89,14 +93,8 @@ RUN set -eux; \
     # Report version
     swipl --version
 
-# Env vars used by rustup
-ENV RUSTUP_HOME=/usr/local/rustup \
-    CARGO_HOME=/usr/local/cargo
-
-# Rust configuration
-ENV PATH=${CARGO_HOME}/bin:$PATH \
-    # See <https://github.com/rust-lang/docker-rust> for these values:
-    RUSTUP_VERSION=1.24.3 \
+# Rust configuration. See <https://github.com/rust-lang/docker-rust>.
+ENV RUSTUP_VERSION=1.24.3 \
     RUSTUP_CHECKSUM=3dc5ef50861ee18657f9db2eeb7392f9c2a6c95c90ab41e45ab4ca71476b4338 \
     RUST_TOOLCHAIN=1.60.0
 
