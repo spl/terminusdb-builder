@@ -26,17 +26,17 @@ jobs:
       - name: Build image
         run: docker build . --tag terminusdb/terminusdb-builder:base
 
-      - name: Install dependencies
+      - name: Install dependencies and build executable
         run: |
           docker run \
-            --name deps-installed \
+            --name test-terminusdb-container \
             --volume $(pwd)/terminusdb:/app/terminusdb \
             --workdir /app/terminusdb \
             terminusdb/terminusdb-builder:base \
-            make install-deps
+            /bin/bash -c "make install-deps && make"
           docker commit \
-            deps-installed \
-            terminusdb/terminusdb-builder:deps-installed
+            test-terminusdb-container \
+            terminusdb/terminusdb-builder:test
 
       - name: Lint
         run: |
@@ -44,20 +44,8 @@ jobs:
             --rm \
             --volume $(pwd)/terminusdb:/app/terminusdb \
             --workdir /app/terminusdb \
-            terminusdb/terminusdb-builder:deps-installed \
+            terminusdb/terminusdb-builder:test \
             make lint
-
-      - name: Build executable
-        run: |
-          docker run \
-            --name executable-built \
-            --volume $(pwd)/terminusdb:/app/terminusdb \
-            --workdir /app/terminusdb \
-            terminusdb/terminusdb-builder:deps-installed \
-            make
-          docker commit \
-            executable-built \
-            terminusdb/terminusdb-builder:executable-built
 
       - name: Unit tests
         run: |
@@ -65,7 +53,7 @@ jobs:
             --rm \
             --volume $(pwd)/terminusdb:/app/terminusdb \
             --workdir /app/terminusdb \
-            terminusdb/terminusdb-builder:executable-built \
+            terminusdb/terminusdb-builder:test \
             make test
 
       - name: Integration tests
@@ -74,7 +62,7 @@ jobs:
             --rm \
             --volume $(pwd)/terminusdb:/app/terminusdb \
             --workdir /app/terminusdb \
-            terminusdb/terminusdb-builder:executable-built \
+            terminusdb/terminusdb-builder:test \
             /app/terminusdb/terminusdb store init
           docker run \
             --name server-running \
@@ -82,13 +70,13 @@ jobs:
             --net=host \
             --volume $(pwd)/terminusdb:/app/terminusdb \
             --workdir /app/terminusdb \
-            terminusdb/terminusdb-builder:executable-built \
+            terminusdb/terminusdb-builder:test \
             /app/terminusdb/terminusdb serve
           docker run \
             --rm \
             --net=host \
             --volume $(pwd)/terminusdb:/app/terminusdb \
             --workdir /app/terminusdb/tests \
-            terminusdb/terminusdb-builder:executable-built \
+            terminusdb/terminusdb-builder:test \
             /bin/bash -c "npm install-ci-check && npm run check"
           docker stop server-running
