@@ -78,5 +78,5 @@ jobs:
             --volume $(pwd)/terminusdb:/app/terminusdb \
             --workdir /app/terminusdb/tests \
             terminusdb/terminusdb-builder:test \
-            /bin/bash -c "npm install-ci-check && npm run check"
+            /bin/bash -c "npm install-ci-test && npm run check"
           docker stop server-running
