@@ -2,6 +2,8 @@ FROM debian:bullseye-slim
 
 LABEL maintainer "TerminusDB Team <team@terminusdb.com>"
 
+ENV NODE_VERSION=16
+
 # Install build and development dependencies
 RUN set -eux; \
     apt-get update; \
@@ -32,8 +34,13 @@ RUN set -eux; \
       libtcmalloc-minimal4 \
       make \
       ninja-build \
+      nodejs \
       zlib1g-dev; \
-    rm -rf /var/lib/apt/lists/*
+    curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -; \
+    apt-get install -y --no-install-recommends nodejs; \
+    rm -rf /var/lib/apt/lists/*; \
+    node --version; \
+    npm --version
 
 # SWI-Prolog configuration
 ENV LANG=C.UTF-8 \
@@ -43,7 +50,7 @@ ENV LANG=C.UTF-8 \
 # Instal SWI-Prolog
 RUN set -eux; \
     SWIPL_SRC=swipl-${SWIPL_VERSION}; \
-    curl -OL "http://www.swi-prolog.org/download/stable/src/${SWIPL_SRC}.tar.gz"; \
+    curl -fsSLO "http://www.swi-prolog.org/download/stable/src/${SWIPL_SRC}.tar.gz"; \
     echo "${SWIPL_CHECKSUM} *${SWIPL_SRC}.tar.gz" | sha256sum -c -; \
     tar -xzf ${SWIPL_SRC}.tar.gz; \
     mkdir ${SWIPL_SRC}/build; \
@@ -76,7 +83,7 @@ ENV PATH=${CARGO_HOME}/bin:$PATH \
 
 # Install Rust
 RUN set -eux; \
-    curl -OL "https://static.rust-lang.org/rustup/archive/${RUSTUP_VERSION}/x86_64-unknown-linux-gnu/rustup-init"; \
+    curl -fsSLO "https://static.rust-lang.org/rustup/archive/${RUSTUP_VERSION}/x86_64-unknown-linux-gnu/rustup-init"; \
     echo "${RUSTUP_CHECKSUM} *rustup-init" | sha256sum -c -; \
     chmod +x rustup-init; \
     ./rustup-init -y --no-modify-path --profile=minimal; \
