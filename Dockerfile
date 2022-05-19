@@ -35,12 +35,16 @@ RUN set -eux; \
       make \
       ninja-build \
       nodejs \
+      python3 \
+      python3-pip \
       zlib1g-dev; \
     curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -; \
     apt-get install -y --no-install-recommends nodejs; \
     rm -rf /var/lib/apt/lists/*; \
     node --version; \
-    npm --version
+    npm --version; \
+    python3 --version; \
+    pip --version
 
 # SWI-Prolog configuration
 ENV LANG=C.UTF-8 \
