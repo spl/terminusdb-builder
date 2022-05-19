@@ -30,7 +30,7 @@ jobs:
         with:
           context: .
           tags: terminusdb/terminusdb-builder:base
-          outputs: type=image
+          load: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
