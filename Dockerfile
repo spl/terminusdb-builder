@@ -4,11 +4,13 @@ LABEL maintainer "TerminusDB Team <team@terminusdb.com>"
 
 # Node.js and Cog configuration
 ENV NODE_VERSION=16 \
-    COG_VERSION=3.3.0
+    COG_VERSION=3.3.0 \
+    npm_config_cache=/tmp/npm-cache
 
 # Install build and development dependencies
 RUN set -eux; \
     apt-get update; \
+    # Install most package dependendencies
     apt-get install -y --no-install-recommends \
       autoconf \
       ca-certificates \
@@ -40,14 +42,21 @@ RUN set -eux; \
       python3 \
       python3-pip \
       zlib1g-dev; \
+    # Install Node.js
     curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -; \
     apt-get install -y --no-install-recommends nodejs; \
     rm -rf /var/lib/apt/lists/*; \
+    # Make the npm cache world-readable
+    # <https://stackoverflow.com/q/14836053>
+    mkdir -p ${npm_config_cache}; \
+    chmod a+w ${npm_config_cache}; \
+    # Install Cog
+    pip install cogapp==${COG_VERSION}; \
+    # Report versions
     node --version; \
     npm --version; \
     python3 --version; \
     pip --version; \
-    pip install cogapp==${COG_VERSION}; \
     cog -v
 
 # SWI-Prolog configuration
