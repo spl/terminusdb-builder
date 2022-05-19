@@ -27,19 +27,19 @@ jobs:
         run: docker build . --tag terminusdb/terminusdb-builder:local
 
       - name: Lint
-        run: >-
-          docker run
-            --rm
-            --volume $(pwd)/terminusdb:/app/terminusdb
-            --workdir /app/terminusdb
-            terminusdb/terminusdb-builder:local
+        run: >
+          docker run \
+            --rm \
+            --volume $(pwd)/terminusdb:/app/terminusdb \
+            --workdir /app/terminusdb \
+            terminusdb/terminusdb-builder:local \
             make lint
 
       - name: Unit tests
-        run: >-
-          docker run
-            --rm
-            --volume $(pwd)/terminusdb:/app/terminusdb
-            --workdir /app/terminusdb
-            terminusdb/terminusdb-builder:local
+        run: >
+          docker run \
+            --rm \
+            --volume $(pwd)/terminusdb:/app/terminusdb \
+            --workdir /app/terminusdb \
+            terminusdb/terminusdb-builder:local \
             /bin/bash -c "make install-deps && make test"
