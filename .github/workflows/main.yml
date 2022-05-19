@@ -23,16 +23,23 @@ jobs:
           repository: terminusdb/terminusdb
           path: terminusdb
 
-      - name: Build (base)
+      - name: Build image
         run: docker build . --tag terminusdb/terminusdb-builder:base
 
-      - name: Build (test)
-        run: >
-          echo "FROM terminusdb/terminusdb-builder:base\nRUN make install-deps" | \
-            docker build . --file - --tag terminusdb/terminusdb-builder:test
+      - name: Install dependencies
+        run: |
+          docker run \
+            --name terminusdb-builder-test \
+            --volume $(pwd)/terminusdb:/app/terminusdb \
+            --workdir /app/terminusdb \
+            terminusdb/terminusdb-builder:test \
+            make install-deps
+          docker commit \
+            terminusdb-builder-test \
+            terminusdb/terminusdb-builder:test
 
-      - name: Lint (test)
-        run: >
+      - name: Lint
+        run: |
           docker run \
             --rm \
             --volume $(pwd)/terminusdb:/app/terminusdb \
@@ -40,8 +47,8 @@ jobs:
             terminusdb/terminusdb-builder:test \
             make lint
 
-      - name: Unit tests (test)
-        run: >
+      - name: Unit tests
+        run: |
           docker run \
             --rm \
             --volume $(pwd)/terminusdb:/app/terminusdb \
