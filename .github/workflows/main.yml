@@ -28,8 +28,8 @@ jobs:
 
       - name: Build (test)
         run: >
-          cat "FROM terminusdb/terminusdb-builder:base\nRUN make install-deps" | \
-            docker build . -f- --tag terminusdb/terminusdb-builder:test
+          echo "FROM terminusdb/terminusdb-builder:base\nRUN make install-deps" | \
+            docker build . --file - --tag terminusdb/terminusdb-builder:test
 
       - name: Lint (test)
         run: >
