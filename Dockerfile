@@ -2,7 +2,8 @@ FROM debian:bullseye-slim
 
 LABEL maintainer "TerminusDB Team <team@terminusdb.com>"
 
-ENV NODE_VERSION=16
+ENV NODE_VERSION=16 \
+    COG_VERSION=3.3.0
 
 # Install build and development dependencies
 RUN set -eux; \
@@ -44,7 +45,9 @@ RUN set -eux; \
     node --version; \
     npm --version; \
     python3 --version; \
-    pip --version
+    pip --version; \
+    pip install cogapp==${COG_VERSION}; \
+    cog -v
 
 # SWI-Prolog configuration
 ENV LANG=C.UTF-8 \
