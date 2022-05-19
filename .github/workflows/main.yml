@@ -32,7 +32,7 @@ jobs:
             --name terminusdb-builder-test \
             --volume $(pwd)/terminusdb:/app/terminusdb \
             --workdir /app/terminusdb \
-            terminusdb/terminusdb-builder:test \
+            terminusdb/terminusdb-builder:base \
             make install-deps
           docker commit \
             terminusdb-builder-test \
