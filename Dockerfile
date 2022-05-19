@@ -19,6 +19,7 @@ ENV COG_DEPS \
         python3-pip
 ENV NODE_DEPS \
         curl
+# See <https://github.com/SWI-Prolog/docker-swipl>.
 ENV SWIPL_BUILD_DEPS \
         autoconf \
         cmake \
@@ -47,6 +48,7 @@ ENV SWIPL_BUILD_DEPS \
         unixodbc-dev \
         wget \
         zlib1g-dev
+# See <https://github.com/SWI-Prolog/docker-swipl>.
 ENV SWIPL_RUNTIME_DEPS \
         libtcmalloc-minimal4 \
         libarchive13 \
