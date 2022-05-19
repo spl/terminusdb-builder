@@ -9,45 +9,106 @@ ENV LANG=C.UTF-8 \
     CARGO_HOME=/usr/local/cargo
 ENV PATH=${CARGO_HOME}/bin:$PATH
 
-# Node.js and Cog configuration
-ENV NODE_VERSION=16 \
-    COG_VERSION=3.3.0
-
-# Install build and development dependencies
-RUN set -eux; \
-    apt-get update; \
-    # Install most package dependendencies
-    apt-get install -y --no-install-recommends \
+# Package dependencies
+#
+# Each env var here should be specified independently (as if there were no other
+# packages installed). This makes it easier to change the them in the future.
+# apt-get doesn't care if there are duplicates.
+ENV COG_DEPS \
+        python3 \
+        python3-pip
+ENV NODE_DEPS \
+        curl
+ENV SWIPL_BUILD_DEPS \
         autoconf \
-        ca-certificates \
-        clang \
         cmake \
         curl \
         g++ \
         gcc \
         git \
         libarchive-dev \
-        libarchive13 \
+        libdb-dev \
         libedit-dev \
-        libedit2 \
+        libgeos++-dev \
+        libgeos-dev \
         libgmp-dev \
-        libgmp10 \
         libgoogle-perftools-dev \
-        libncurses6 \
         libossp-uuid-dev \
-        libossp-uuid16 \
-        libpcre3 \
         libpcre3-dev \
+        libraptor2-dev \
         libreadline-dev \
+        libserd-dev \
+        libspatialindex-dev \
+        libspatialindex-dev \
+        libsqlite3-dev \
         libssl-dev \
-        libssl1.1 \
-        libtcmalloc-minimal4 \
         make \
         ninja-build \
-        nodejs \
-        python3 \
-        python3-pip \
-        zlib1g-dev; \
+        unixodbc-dev \
+        wget \
+        zlib1g-dev
+ENV SWIPL_RUNTIME_DEPS \
+        libtcmalloc-minimal4 \
+        libarchive13 \
+        libyaml-dev \
+        libgmp10 \
+        libossp-uuid16 \
+        libssl1.1 \
+        ca-certificates \
+        libdb5.3 \
+        libpcre3 \
+        libedit2 \
+        libgeos-3.9.0 \
+        libspatialindex6 \
+        unixodbc \
+        odbc-postgresql \
+        tdsodbc \
+        libmariadbclient-dev-compat \
+        libsqlite3-0 \
+        libserd-0-0 \
+        libraptor2-0
+ENV TERMINUSDB_BUILD_DEPS \
+        build-essential \
+        clang \
+        curl \
+        git \
+        libjwt-dev \
+        libssl-dev \
+        make \
+        pkg-config
+ENV TERMINUSDB_RUNTIME_DEPS \
+        libjwt0 \
+        openssl
+
+# Install most dependencies
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        ${COG_DEPS} \
+        ${NODE_DEPS} \
+        ${SWIPL_BUILD_DEPS} \
+        ${SWIPL_RUNTIME_DEPS} \
+        ${TERMINUSDB_BUILD_DEPS} \
+        ${TERMINUSDB_RUNTIME_DEPS}; \
+    rm -rf /var/lib/apt/lists/*; \
+    # Report versions
+    python3 --version; \
+    pip --version
+
+# Cog configuration
+ENV COG_VERSION=3.3.0
+
+# Install Cog
+RUN set -eux; \
+    pip install cogapp==${COG_VERSION}; \
+    # Report version
+    cog -v
+
+# Node.js configuration
+ENV NODE_VERSION=16
+
+# Install Node.js
+RUN set -eux; \
     # Install Node.js
     curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -; \
     apt-get install -y --no-install-recommends nodejs; \
@@ -56,14 +117,9 @@ RUN set -eux; \
     # <https://stackoverflow.com/q/14836053>
     mkdir -p ${npm_config_cache}; \
     chmod a+w ${npm_config_cache}; \
-    # Install Cog
-    pip install cogapp==${COG_VERSION}; \
     # Report versions
     node --version; \
-    npm --version; \
-    python3 --version; \
-    pip --version; \
-    cog -v
+    npm --version
 
 # SWI-Prolog configuration. See <https://github.com/SWI-Prolog/docker-swipl>.
 ENV SWIPL_VERSION=8.4.2 \
