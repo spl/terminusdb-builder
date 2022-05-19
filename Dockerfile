@@ -2,6 +2,7 @@ FROM debian:bullseye-slim
 
 LABEL maintainer "TerminusDB Team <team@terminusdb.com>"
 
+# Node.js and Cog configuration
 ENV NODE_VERSION=16 \
     COG_VERSION=3.3.0
 
@@ -102,11 +103,13 @@ RUN set -eux; \
 
 # [DO THIS LAST]
 #
-# Update the crates.io index to save time for users of this image.
+# Update to the latest crates.io index to save time for users of this image.
 #
 # This attempts to install an executable from the lazy_static crate. However,
 # this crate does not have an executable and will cause the install to fail, but
 # the failure only happens after the index is updated.
 RUN cargo install lazy_static 2> /dev/null || true
+
+WORKDIR /app/terminusdb
 
 CMD ["/bin/bash"]

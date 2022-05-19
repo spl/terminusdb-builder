@@ -31,7 +31,6 @@ jobs:
           docker run \
             --name test-terminusdb-container \
             --volume $(pwd)/terminusdb:/app/terminusdb \
-            --workdir /app/terminusdb \
             terminusdb/terminusdb-builder:base \
             /bin/bash -c "make install-deps && make"
           docker commit \
@@ -43,7 +42,6 @@ jobs:
           docker run \
             --rm \
             --volume $(pwd)/terminusdb:/app/terminusdb \
-            --workdir /app/terminusdb \
             terminusdb/terminusdb-builder:test \
             make lint
 
@@ -52,7 +50,6 @@ jobs:
           docker run \
             --rm \
             --volume $(pwd)/terminusdb:/app/terminusdb \
-            --workdir /app/terminusdb \
             terminusdb/terminusdb-builder:test \
             make test
 
@@ -61,7 +58,6 @@ jobs:
           docker run \
             --rm \
             --volume $(pwd)/terminusdb:/app/terminusdb \
-            --workdir /app/terminusdb \
             terminusdb/terminusdb-builder:test \
             /app/terminusdb/terminusdb store init
           docker run \
@@ -69,7 +65,6 @@ jobs:
             --detach \
             --net=host \
             --volume $(pwd)/terminusdb:/app/terminusdb \
-            --workdir /app/terminusdb \
             terminusdb/terminusdb-builder:test \
             /app/terminusdb/terminusdb serve
           docker run \
