@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim
+FROM terminusdb/swipl:v8.4.2
 
 LABEL maintainer "TerminusDB Team <team@terminusdb.com>"
 
@@ -19,56 +19,6 @@ ENV COG_DEPS \
         python3-pip
 ENV NODE_DEPS \
         curl
-# See <https://github.com/SWI-Prolog/docker-swipl>.
-ENV SWIPL_BUILD_DEPS \
-        autoconf \
-        cmake \
-        curl \
-        g++ \
-        gcc \
-        git \
-        libarchive-dev \
-        libdb-dev \
-        libedit-dev \
-        libgeos++-dev \
-        libgeos-dev \
-        libgmp-dev \
-        libgoogle-perftools-dev \
-        libossp-uuid-dev \
-        libpcre3-dev \
-        libraptor2-dev \
-        libreadline-dev \
-        libserd-dev \
-        libspatialindex-dev \
-        libspatialindex-dev \
-        libsqlite3-dev \
-        libssl-dev \
-        make \
-        ninja-build \
-        unixodbc-dev \
-        wget \
-        zlib1g-dev
-# See <https://github.com/SWI-Prolog/docker-swipl>.
-ENV SWIPL_RUNTIME_DEPS \
-        libtcmalloc-minimal4 \
-        libarchive13 \
-        libyaml-dev \
-        libgmp10 \
-        libossp-uuid16 \
-        libssl1.1 \
-        ca-certificates \
-        libdb5.3 \
-        libpcre3 \
-        libedit2 \
-        libgeos-3.9.0 \
-        libspatialindex6 \
-        unixodbc \
-        odbc-postgresql \
-        tdsodbc \
-        libmariadbclient-dev-compat \
-        libsqlite3-0 \
-        libserd-0-0 \
-        libraptor2-0
 ENV TERMINUSDB_DEPS \
         build-essential \
         clang \
@@ -85,8 +35,6 @@ RUN set -eux; \
     apt-get install -y --no-install-recommends \
         ${COG_DEPS} \
         ${NODE_DEPS} \
-        ${SWIPL_BUILD_DEPS} \
-        ${SWIPL_RUNTIME_DEPS} \
         ${TERMINUSDB_DEPS}; \
     rm -rf /var/lib/apt/lists/*; \
     rm -rf /var/cache/apt/*; \
@@ -119,34 +67,6 @@ RUN set -eux; \
     # Report versions
     node --version; \
     npm --version
-
-# SWI-Prolog configuration. See <https://github.com/SWI-Prolog/docker-swipl>.
-ENV SWIPL_VERSION=8.4.2 \
-    SWIPL_CHECKSUM=be21bd3d6d1c9f3e9b0d8947ca6f3f5fd56922a3819cae03251728f3e1a6f389
-
-# Instal SWI-Prolog
-RUN set -eux; \
-    SWIPL_SRC=swipl-${SWIPL_VERSION}; \
-    curl -fsSLO "http://www.swi-prolog.org/download/stable/src/${SWIPL_SRC}.tar.gz"; \
-    echo "${SWIPL_CHECKSUM} *${SWIPL_SRC}.tar.gz" | sha256sum -c -; \
-    tar -xzf ${SWIPL_SRC}.tar.gz; \
-    mkdir ${SWIPL_SRC}/build; \
-    cd ${SWIPL_SRC}/build; \
-    cmake .. \
-        -DCMAKE_BUILD_TYPE=PGO \
-        -DSWIPL_PACKAGES_X=OFF \
-        -DSWIPL_PACKAGES_JAVA=OFF \
-        -DCMAKE_INSTALL_PREFIX=/usr \
-        -DINSTALL_DOCUMENTATION=OFF \
-        -DSWIPL_PACKAGES_ODBC=OFF \
-        -G Ninja; \
-    ninja; \
-    ninja install; \
-    cd -; \
-    rm -r ${SWIPL_SRC}.tar.gz ${SWIPL_SRC}; \
-    mkdir -p /usr/lib/swipl/pack; \
-    # Report version
-    swipl --version
 
 # Rust configuration. See <https://github.com/rust-lang/docker-rust>.
 ENV RUSTUP_VERSION=1.24.3 \
