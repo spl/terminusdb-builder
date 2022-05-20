@@ -97,4 +97,4 @@ jobs:
           images: terminusdb/terminusdb-builder
 
       - name: Echo metadata outputs
-        run: echo ${{ steps.meta.outputs }}
+        run: echo '${{ toJSON(steps.meta.outputs) }}'
