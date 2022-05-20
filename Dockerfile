@@ -18,7 +18,8 @@ ENV COG_DEPS \
         python3 \
         python3-pip
 ENV NODE_DEPS \
-        curl
+        curl \
+        procps
 ENV TERMINUSDB_DEPS \
         build-essential \
         clang \
