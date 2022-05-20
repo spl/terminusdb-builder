@@ -69,7 +69,7 @@ ENV SWIPL_RUNTIME_DEPS \
         libsqlite3-0 \
         libserd-0-0 \
         libraptor2-0
-ENV TERMINUSDB_BUILD_DEPS \
+ENV TERMINUSDB_DEPS \
         build-essential \
         clang \
         curl \
@@ -78,9 +78,6 @@ ENV TERMINUSDB_BUILD_DEPS \
         libssl-dev \
         make \
         pkg-config
-ENV TERMINUSDB_RUNTIME_DEPS \
-        libjwt0 \
-        openssl
 
 # Install most dependencies
 RUN set -eux; \
@@ -90,9 +87,9 @@ RUN set -eux; \
         ${NODE_DEPS} \
         ${SWIPL_BUILD_DEPS} \
         ${SWIPL_RUNTIME_DEPS} \
-        ${TERMINUSDB_BUILD_DEPS} \
-        ${TERMINUSDB_RUNTIME_DEPS}; \
+        ${TERMINUSDB_DEPS}; \
     rm -rf /var/lib/apt/lists/*; \
+    rm -rf /var/cache/apt/*; \
     # Report versions
     python3 --version; \
     pip --version
