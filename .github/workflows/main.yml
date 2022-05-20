@@ -95,6 +95,7 @@ jobs:
         id: meta
         with:
           images: terminusdb/terminusdb-builder
+          tags: type=ref,event=tag
 
       - name: Echo metadata outputs
         run: echo '${{ toJSON(steps.meta.outputs) }}'
